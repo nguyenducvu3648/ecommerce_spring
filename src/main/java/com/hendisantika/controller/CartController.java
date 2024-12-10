@@ -1,16 +1,17 @@
 package com.hendisantika.controller;
 
+import com.hendisantika.model.ShoppingCart;
 import com.hendisantika.service.ShoppingCartService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,18 +32,25 @@ public class CartController {
     private final ShoppingCartService shoppingCartService;
 
     @PostMapping("/addToCart")
-    public String addToCart(HttpServletRequest request, Model model, @RequestParam("id") Long id,
-                            @RequestParam("quantity") int quantity) {
-        String sessionToken = (String) request.getSession(true).getAttribute("sessionToken");
-        if (sessionToken == null) {
-            sessionToken = UUID.randomUUID().toString();
-            request.getSession().setAttribute("sessionToken", sessionToken);
-            shoppingCartService.addShoppingCartFirstTime(id, sessionToken, quantity);
-        } else {
-            shoppingCartService.addToExistingShoppingCart(id, sessionToken, quantity);
+    @ResponseBody
+    public ResponseEntity<?> addToCart(
+            @RequestParam("id") Long id,
+            @RequestParam("quantity") int quantity) {
+        try {
+            if (quantity <= 0) {
+                throw new IllegalArgumentException("Quantity must be greater than 0");
+            }
+            shoppingCartService.addToShoppingCart(id, quantity);
+
+            // Trả về giỏ hàng sau khi thêm sản phẩm
+            ShoppingCart updatedCart = shoppingCartService.getCurrentCart();
+            return ResponseEntity.ok(updatedCart);
+        } catch (IllegalArgumentException | EntityNotFoundException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
-        return "redirect:/";
     }
+
+
 
     @GetMapping("/shoppingCart")
     public String showShoppingCartView() {

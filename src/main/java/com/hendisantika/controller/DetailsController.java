@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,8 +28,13 @@ public class DetailsController {
 
     @GetMapping("/detail/{id}")
     public String showIndex(@PathVariable("id") Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        return "details";
+        try {
+            Product product = productService.getProductById(id);
+            model.addAttribute("product", product);
+            return "details";  // Kiểm tra tên của view 'details'
+        } catch (ResponseStatusException e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";  // Nếu có lỗi, chuyển tới trang lỗi
+        }
     }
 }

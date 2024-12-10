@@ -1,7 +1,7 @@
 package com.hendisantika.service;
 
+import com.hendisantika.DTO.ProductDTO;
 import com.hendisantika.model.Carousel;
-import com.hendisantika.model.Category;
 import com.hendisantika.model.Coupon;
 import com.hendisantika.model.Product;
 import com.hendisantika.repository.CategoryRepository;
@@ -23,19 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * Project : spring-boot-ecommerce
- * User: powercommerce
- * Email: hendisantika@gmail.com
- * Telegram : @hendisantika34
- * Date: 7/30/22
- * Time: 20:41
- * To change this template use File | Settings | File Templates.
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -44,48 +33,18 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final CouponRepository couponRepository;
 
-    public void saveProductToDB(MultipartFile file, String name, String description, int quantity
-            , Double price, String brand, String categories) {
-        Product p = new Product();
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        if (fileName.contains("..")) {
-            System.out.println("not a valid file");
-        }
-        try {
-            p.setImage(resizeImageForUse(Base64.getEncoder().encodeToString(file.getBytes()), 400, 400));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        p.setDescription(description);
 
-        p.setName(name);
-        p.setPrice(price);
-        p.setBrand(brand);
-        p.setQuantity(quantity);
-        Coupon c = new Coupon();
-        c.setDiscount(0);
-        p.setDiscount(c);
-        p = addCategoriesToProduct(p, categories);
-        productRepository.save(p);
-    }
-
-    private Product addCategoriesToProduct(Product p, String categories) {
-        String[] cates = categories.split(",");
-        Category category = null;
-        for (String str : cates) {
-            category = categoryRepository.findById(Long.parseLong(str)).get();
-            p.getCategories().add(category);
-        }
-        return p;
-    }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+
     public void deleteProductById(Long id) {
+        System.out.println("Deleting product with id: " + id);
         productRepository.deleteById(id);
     }
+
 
     public void changeProductName(Long id, String name) {
         Product p = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with " + id + " not found"));
@@ -105,13 +64,20 @@ public class ProductService {
         productRepository.save(p);
     }
 
-    public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
+
+    public Product addProduct(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setName(productDTO.getName());
+        product.setBrand(productDTO.getBrand());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setQuantity(productDTO.getQuantity());
+        product.setImage(productDTO.getImageUrl());
+
+        return productRepository.save(product);
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
-    }
+
 
     public void addImageToProduct(MultipartFile file, Long id) {
 
@@ -137,17 +103,6 @@ public class ProductService {
 
     }
 
-    public void saveProductDiscount(Long id, int discount) {
-        Product p = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with " + id + " not found"));
-        if (p.getDiscount() == null) {
-            Coupon c = new Coupon();
-            c.setDiscount(discount);
-            p.setDiscount(c);
-        } else {
-            p.getDiscount().setDiscount(discount);
-        }
-        productRepository.save(p);
-    }
 
     public void changeProductDiscount(Long id, int discount) {
         Product p = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with " + id + " not found"));
@@ -210,7 +165,8 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with " + id + " not found"));
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with ID " + id + " not found"));
     }
 
     public List<Product> searchProductByNameLike(String value) {
@@ -221,16 +177,4 @@ public class ProductService {
         return productRepository.findAllBrandsDistincts();
     }
 
-    public Product getProductWithBiggestDiscount() {
-        Coupon discount = couponRepository.findMax();
-        List<Product> products = productRepository.findAll();
-        Product featuredProduct = null;
-        for (Product p : products) {
-            if (p.getDiscount().equals(discount)) {
-                featuredProduct = p;
-                break;
-            }
-        }
-        return featuredProduct;
-    }
 }

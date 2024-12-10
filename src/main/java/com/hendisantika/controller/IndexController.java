@@ -1,12 +1,16 @@
 package com.hendisantika.controller;
 
 import com.hendisantika.model.Product;
+import com.hendisantika.model.ShoppingCart;
 import com.hendisantika.service.ProductService;
+import com.hendisantika.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +38,6 @@ public class IndexController {
         model.addAttribute("products", productService.getAllProducts());
         return "index";
     }
-
     @GetMapping(value = "/search")
     @ResponseBody
     public ModelAndView search(@RequestParam("value") String value) {
