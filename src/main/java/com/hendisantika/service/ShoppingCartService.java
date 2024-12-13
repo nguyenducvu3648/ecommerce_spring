@@ -6,37 +6,30 @@ import com.hendisantika.model.ShoppingCart;
 import com.hendisantika.repository.CartItemRepository;
 import com.hendisantika.repository.ShoppingCartRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
 import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA.
- * Project : spring-boot-ecommerce
- * User: powercommerce
- * Email: hendisantika@gmail.com
- * Telegram : @hendisantika34
- * Date: 7/30/22
- * Time: 20:54
- * To change this template use File | Settings | File Templates.
- */
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ShoppingCartService {
 
-    private final ShoppingCartRepository shoppingCartRepository;
-    private final ProductService productService;
-    private final CartItemRepository cartItemRepository;
+    ShoppingCartRepository shoppingCartRepository;
+    ProductService productService;
+    CartItemRepository cartItemRepository;
 
     @Getter
     private final ShoppingCart currentCart = new ShoppingCart();
+
 
     public void addToShoppingCart(Long productId, int quantity) {
         Product product = productService.getProductById(productId);

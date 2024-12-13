@@ -18,5 +18,4 @@ public class ProductDTO {
     private Double price;
     private Integer quantity;
     private String imageUrl;
-//    private Long discountId;
 }

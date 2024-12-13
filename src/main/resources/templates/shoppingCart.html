@@ -75,19 +75,13 @@
 				</tr>
 				</thead>
 				<tbody>
-				<tr th:each="item : ${cartItems}">
-					<td><img th:src="@{'/images/' + ${item.product.image}}" alt="Product Image" style="width: 80px; height: 80px;"></td>
-					<td th:text="${item.product.name}"></td>
-					<td th:text="${item.product.price}"></td>
+				<tr th:each="item : ${cart.items}">
+					<td><img th:src="@{ ${item.product.image}}" alt="Product Image" style="width: 80px; height: 80px;"></td>
+					<td th:text="${item.product.name}">Product Name</td>
+					<td th:text="${item.product.price}">0.00</td>
+					<td th:text="${item.quantity}">1</td>
 					<td>
-						<form action="/cart/update" method="post" class="d-flex align-items-center">
-							<input type="hidden" name="productId" th:value="${item.product.id}">
-							<input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control-sm" style="width: 60px;">
-							<button type="submit" class="btn btn-sm btn-success ml-2">Update</button>
-						</form>
-					</td>
-					<td>
-						<a th:href="@{'/cart/remove/' + ${item.product.id}}" class="btn btn-sm btn-danger">Delete</a>
+						<a th:href="@{'/removeCartItem/{id}' + ${item.product.id}}" class="btn btn-sm btn-danger">Delete</a>
 					</td>
 				</tr>
 				</tbody>

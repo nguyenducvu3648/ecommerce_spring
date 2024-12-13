@@ -11,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequiredArgsConstructor
@@ -51,6 +51,31 @@ public class AdminProductController {
         }
     }
 
+    @GetMapping("/admin/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        try {
+            Product productDTO = productService.getProductById(id);
+            model.addAttribute("product", productDTO);
+            return "admin/edit-product";
+        } catch (NoSuchElementException e) {
+            model.addAttribute("error", "Product not found.");
+            return "error";
+        }
+    }
+
+    @PostMapping("/admin/edit/{id}")
+    public String updateProduct(@PathVariable Long id, @ModelAttribute("product") Product product, Model model) {
+        try {
+            Product updatedProduct = productService.updateProduct(id, product);
+            model.addAttribute("product", updatedProduct);
+            return "redirect:/admin/index";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error occurred while updating product.");
+            return "error";
+        }
+    }
+
+
 
 
 
@@ -59,61 +84,16 @@ public class AdminProductController {
         try {
             productService.deleteProductById(id);
         } catch (Exception e) {
-            // Log chi tiết lỗi
             e.printStackTrace();
-            return "error";  // Trả về trang lỗi nếu có sự cố
+            return "error";
         }
-        return "redirect:/admin/index";  // Điều hướng đến trang danh sách sản phẩm sau khi xóa
+        return "redirect:/admin/index";
     }
 
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, Model model) {
         model.addAttribute("errorMessage", ex.getMessage());
-        return "error";  // Trang lỗi sẽ hiển thị thông báo lỗi
+        return "error";
     }
 
-
-
-    @PostMapping("/admin/changeName")
-    public String changeProductName(@RequestParam("id") Long id,
-                                    @RequestParam("newPname") String name) {
-        productService.changeProductName(id, name);
-        return "redirect:/admin/index";
-    }
-
-    @PostMapping("/admin/changeDescription")
-    public String changeDescription(@RequestParam("id") Long id,
-                                    @RequestParam("newDescription") String description) {
-        productService.changeProductDescription(id, description);
-        return "redirect:/admin/index";
-    }
-
-    @PostMapping("/admin/changePrice")
-    public String changePrice(@RequestParam("id") Long id,
-                              @RequestParam("newPrice") Double price) {
-        productService.changeProductPrice(id, price);
-        return "redirect:/admin/index";
-    }
-
-    @PostMapping("/admin/changeQuantity")
-    public String changeQuantity(@RequestParam("id") Long id,
-                                 @RequestParam("newQuantity") int quantity) {
-        productService.changeProductQuantity(id, quantity);
-        return "redirect:/admin/index";
-    }
-
-    @PostMapping("/admin/changeDiscount")
-    public String changeDiscount(@RequestParam("id") Long id,
-                                 @RequestParam("newDiscount") int discount) {
-        productService.changeProductDiscount(id, discount);
-        return "redirect:/admin/index";
-    }
-
-
-    @PostMapping("/admin/addPictureToP")
-    public String addImageToProduct(@RequestParam("file") MultipartFile file,
-                                    @RequestParam("product_id") Long id) {
-        productService.addImageToProduct(file, id);
-        return "redirect:/admin/product";
-    }
 }

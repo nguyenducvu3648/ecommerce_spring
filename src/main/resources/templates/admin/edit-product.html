@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Edit Product | Admin</title>
+    <base href="/">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="font-awesome/css1/all.css" rel="stylesheet">
+    <link rel="icon" href="images/icon.png" />
+    <link rel="stylesheet" href="style4.css">
+    <script type="text/javascript" src="font-awesome/js1/fontawesome.js"></script>
+</head>
+
+<body>
+<div class="wrapper">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>&nbsp;&nbsp;&nbsp;E-Commerce App</h3>
+            <strong><i class="fa fa-shopping-cart" aria-hidden="true"></i></strong>
+        </div>
+        <!-- Các item menu tương tự như trong giao diện trước -->
+    </nav>
+
+    <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-light" style="border-bottom: 4px solid #7386D5;">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn btn-info mr-4">
+                    <i class="fas fa-align-left"></i>
+                </button>
+                <form class="form-inline frm">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="container">
+            <h5 class="text-center">Edit Product</h5>
+            <hr>
+            <form th:action="@{/admin/edit/{id}(id=${product.id})}" method="post">
+                <div class="form-group">
+                    <label for="productName">Name</label>
+                    <input type="text" class="form-control" id="productName" th:field="*{product.name}">
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea class="form-control" id="productDescription" th:field="*{product.description}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productQuantity">Quantity</label>
+                    <input type="number" class="form-control" id="productQuantity" th:field="*{product.quantity}">
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Price</label>
+                    <input type="number" class="form-control" id="productPrice" th:field="*{product.price}">
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Image URL</label>
+                    <input type="text" class="form-control" id="productImage" th:field="*{product.image}">
+                </div>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </form>
+            <hr>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    $('#sidebarCollapse').on('click', function() {
+        $('#sidebar').toggleClass('active');
+    });
+</script>
+</body>
+
+</html>

@@ -91,6 +91,7 @@
 						<th scope="col">Description</th>
 						<th scope="col">Quantity</th>
 						<th scope="col">Price</th>
+						<th scope="col">Edit</th>
 						<th scope="col">Delete Product</th>
 					</tr>
 					</thead>
@@ -104,6 +105,9 @@
 						<td th:text="${product.description}"></td>
 						<td th:text="${product.quantity}"></td>
 						<td th:text="${product.price}"></td>
+						<td>
+							<a th:href="@{/admin/edit/{id}(id=${product.id})}" class="btn btn-warning btn-sm mt-4">Edit</a>
+						</td>
 
 						<td>
 							<!-- Delete button -->
@@ -136,4 +140,3 @@
 </script>
 </body>
 </html>
-
